@@ -1,0 +1,12 @@
+[
+  {
+    "sites": ["outlook\\.(?:office(?:365)?\\.com|live\\.com|cloud\\.microsoft)"],
+    "desktop_names": ["Outlook", "Microsoft Outlook"],
+    "window_titles": ["\\boutlook\\b"]
+  },
+  {
+    "sites": ["teams\\.(?:cloud\\.microsoft|microsoft\\.com)"],
+    "desktop_names": ["Microsoft Teams", "Teams"],
+    "window_titles": ["\\bmicrosoft teams\\b", "\\bteams(?: \\| |$)"]
+  }
+]

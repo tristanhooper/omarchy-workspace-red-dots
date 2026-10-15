@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.bak.*
+.env
+.env.*
+*.log
+*.core
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.zip
+*.tar.gz
