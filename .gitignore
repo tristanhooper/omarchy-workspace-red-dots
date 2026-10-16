@@ -6,6 +6,7 @@ __pycache__/
 *.log
 *.core
 *.png
+!/preview.png
 *.jpg
 *.jpeg
 *.webp
