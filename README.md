@@ -70,7 +70,7 @@ python3 workspace-notifications.py --status
 
 ## App routing
 
-Outlook and Teams routes are included. On each start, the watcher discovers PWA
+Outlook, Teams, and WhatsApp routes are included. On each start, the watcher discovers PWA
 IDs from the current user's installed `.desktop` launchers, matching their display
 names. It uses the resulting ID to find the PWA's current Hyprland workspace.
 Window-title matching provides a fallback if a matching launcher cannot be found.

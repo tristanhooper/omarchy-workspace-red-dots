@@ -35,6 +35,18 @@ class RoutingTests(unittest.TestCase):
             {'app': 'Brave', 'body': 'https://teams.cloud.microsoft New chat'},
             self.windows, self.routes), 3)
 
+    def test_whatsapp_pwa_notification_routes_by_site_and_window_title(self):
+        routes = dots.resolve_routes(
+            json.loads((ROOT / 'notification-routes.json').read_text()), [])
+        windows = [{
+            'class': 'brave-web.whatsapp.com__-Default',
+            'title': 'WhatsApp',
+            'workspace': {'id': 7},
+        }]
+        self.assertEqual(dots.workspace_for(
+            {'app': 'Brave', 'body': 'New message from web.whatsapp.com'},
+            windows, routes), 7)
+
     def test_unknown_browser_site_is_not_guessed(self):
         self.assertIsNone(dots.workspace_for(
             {'app': 'Brave', 'body': 'Unknown site'}, self.windows, self.routes))

@@ -8,5 +8,10 @@
     "sites": ["teams\\.(?:cloud\\.microsoft|microsoft\\.com)"],
     "desktop_names": ["Microsoft Teams", "Teams"],
     "window_titles": ["\\bmicrosoft teams\\b", "\\bteams(?: \\| |$)"]
+  },
+  {
+    "sites": ["web\\.whatsapp\\.com"],
+    "desktop_names": ["WhatsApp"],
+    "window_titles": ["\\bWhatsApp\\b"]
   }
 ]
