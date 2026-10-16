@@ -29,11 +29,15 @@ Install through Omarchy's plugin manager:
 
 ```sh
 omarchy plugin add https://github.com/tristanhooper/omarchy-workspace-red-dots.git --enable
+omarchy plugin disable omarchy.workspaces
 ```
 
-The plugin manager installs and enables the widget. It runs as your user inside
-the Omarchy shell and does not need root privileges. It does not change monitor
-or workspace configuration.
+The first command installs and enables the widget. The second disables the
+built-in workspace widget so the bar does not show both. Because this plugin
+uses a permanent marketplace ID without clone metadata, Omarchy does not swap
+the built-in widget automatically. The plugin runs as your user inside the
+Omarchy shell and does not need root privileges; it does not change monitor
+settings or workspace assignments.
 
 Update a Git-managed installation with Omarchy's plugin manager:
 
@@ -132,7 +136,8 @@ omarchy plugin enable omarchy.workspaces
 ```
 
 Removing the plugin deletes its installed plugin files through Omarchy. The
-second command restores the built-in workspace widget.
+plugin does not carry clone metadata, so removal does not automatically restore
+the built-in widget; the second command enables it again.
 
 ## Validate
 
