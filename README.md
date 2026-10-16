@@ -23,21 +23,24 @@ Validated on Omarchy 4.0.4 / Hyprland 0.56.2. This plugin uses the Omarchy shell
 existing QML components and notification history. It is not a Waybar module and
 does not support older Omarchy installations that use Waybar.
 
-## Install locally
+## Install
 
-Download or clone this repository, then run from a terminal in your Omarchy session:
+Install through Omarchy's plugin manager:
 
 ```sh
-python3 install.py
+omarchy plugin add https://github.com/tristanhooper/omarchy-workspace-red-dots.git --enable
 ```
 
-The installer validates the plugin, backs up your existing plugin and shell
-configuration, enables the widget, and restarts the shell. Application windows
-stay open. If another custom workspace widget is active, it is disabled and this
-plugin replaces it in the same slot. Its files are preserved.
+The plugin manager installs and enables the widget. It runs as your user inside
+the Omarchy shell and does not need root privileges. It does not change monitor
+or workspace configuration.
 
-The plugin ID is `thooper.workspace-red-dots`. Omarchy can also install this
-repository through `omarchy plugin add <repository-git-url> --enable` once hosted.
+For a local checkout, `python3 install.py` is also available. It validates the
+plugin, backs up the existing plugin and shell configuration under
+`~/.local/state/omarchy/plugin-backups/`, then enables it and restarts the shell.
+If another workspace widget cloned from `omarchy.workspaces` is active, the
+script disables that widget while preserving its files and replaces it in the
+same slot. Application windows stay open.
 
 For updates installed with `install.py`, rerun it. Existing local notification
 routes are preserved. For Git-managed installations, use Omarchy's plugin update
@@ -125,12 +128,18 @@ notification identities and pending workspace numbers. It makes no network
 requests, includes no telemetry, and invokes no remote services. These statements
 describe the plugin; Omarchy and the apps retain their own data independently.
 
-## Disable / restore stock workspaces
+## Remove / restore stock workspaces
 
 ```sh
-omarchy plugin disable thooper.workspace-red-dots
+omarchy plugin remove thooper.workspace-red-dots
 omarchy plugin enable omarchy.workspaces
 ```
+
+Removing the plugin deletes its installed plugin files through Omarchy. The
+second command restores the built-in workspace widget. If you used `install.py`,
+its backup of the prior shell configuration and plugin files remains under
+`~/.local/state/omarchy/plugin-backups/` if you want to restore a different
+workspace widget.
 
 ## Validate
 

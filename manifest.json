@@ -17,8 +17,5 @@
     "category": "Compositor",
     "allowMultiple": false,
     "defaultSection": "left"
-  },
-  "omarchy": {
-    "clonedFrom": "omarchy.workspaces"
   }
 }
