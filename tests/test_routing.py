@@ -55,6 +55,11 @@ class RoutingTests(unittest.TestCase):
             {'app': 'Brave', 'summary': 'Question about outlook.office.com', 'body': 'unknown.example'},
             self.windows, self.routes))
 
+    def test_summary_routes_site_when_notification_has_no_body(self):
+        self.assertEqual(dots.workspace_for(
+            {'app': 'Brave', 'summary': 'outlook.office.com', 'body': ''},
+            self.windows, self.routes), 2)
+
     def test_pwa_discovery_does_not_require_preconfigured_app_ids(self):
         self.assertEqual(self.routes[0]['app_ids'], ['test-outlook-app'])
         self.assertEqual(self.routes[1]['app_ids'], ['test-teams-app'])

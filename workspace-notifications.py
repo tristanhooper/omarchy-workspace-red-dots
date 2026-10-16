@@ -58,7 +58,12 @@ def workspace_for(notification, windows, routes):
     app = str(notification.get('app', '')).lower()
     if app in ('omarchy-action', 'notify-send', ''):
         return None
-    text = '\n'.join(str(notification.get(k, '')) for k in ('app', 'body')).lower()
+    # Prefer app name and body. Use the summary only when the body is empty:
+    # message subjects can mention a site unrelated to the notifying PWA.
+    route_fields = ('app', 'body')
+    if not str(notification.get('body', '')).strip():
+        route_fields = ('app', 'summary')
+    text = '\n'.join(str(notification.get(k, '')) for k in route_fields).lower()
     browser = any(name in app for name in ('brave', 'chrom', 'edge', 'firefox', 'vivaldi'))
     matches = []
     # Prefer a PWA's site identity over the shared browser application name.

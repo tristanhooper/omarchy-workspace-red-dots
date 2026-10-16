@@ -78,7 +78,9 @@ To add another browser app, edit the **installed** `notification-routes.json`:
 ```
 
 `sites` contains regular expressions matched against the notification's app name
-and body. `desktop_names` matches the app launcher's display name, ignoring a
+and body; when the body is empty, the summary can identify the site. This avoids
+routing a message to a PWA just because its subject mentions a site.
+`desktop_names` matches the app launcher's display name, ignoring a
 trailing ` (PWA)`. `window_titles` contains fallback regular expressions. An
 optional `class` substring can override discovery for unusual launchers. Use
 `hyprctl clients -j` locally to inspect window classes; do not publish its output.
