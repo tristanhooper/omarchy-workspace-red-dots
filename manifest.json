@@ -3,7 +3,7 @@
   "id": "community.workspace-red-dots",
   "name": "Workspace Red Dots",
   "version": "1.1.0",
-  "author": "Workspace Red Dots contributors",
+  "author": "Tristan Hooper",
   "description": "Workspace indicators with notification attention dots",
   "kinds": [
     "bar-widget"
