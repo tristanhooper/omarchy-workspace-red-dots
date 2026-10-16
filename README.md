@@ -76,6 +76,7 @@ The default web app routes are:
 | --- | --- |
 | Outlook | `outlook.office.com`, `outlook.office365.com`, `outlook.live.com`, `outlook.cloud.microsoft` |
 | Microsoft Teams | `teams.microsoft.com`, `teams.cloud.microsoft` |
+| OneNote | SharePoint `Doc.aspx` pages, or notifications mentioning OneNote |
 | WhatsApp | `web.whatsapp.com` |
 | Discord | `discord.com` |
 | Basecamp | `launchpad.37signals.com`, `basecamp.com` |
@@ -114,7 +115,8 @@ and body; when the body is empty, the summary can identify the site. This avoids
 routing a message to a PWA just because its subject mentions a site.
 `desktop_names` matches the app launcher's display name, ignoring a
 trailing ` (PWA)`. `window_titles` contains fallback regular expressions. An
-optional `class` substring can override discovery for unusual launchers. Use
+optional `class` substring can override discovery for unusual launchers. An
+optional `icon` path can point to an asset relative to this plugin directory. Use
 `hyprctl clients -j` locally to inspect window classes; do not publish its output.
 Restart with `omarchy restart shell` after changing routes.
 

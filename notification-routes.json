@@ -6,8 +6,15 @@
   },
   {
     "sites": ["teams\\.(?:cloud\\.microsoft|microsoft\\.com)"],
+    "icon": "assets/teams.svg",
     "desktop_names": ["Microsoft Teams", "Teams"],
     "window_titles": ["\\bmicrosoft teams\\b", "\\bteams(?: \\| |$)"]
+  },
+  {
+    "sites": ["sharepoint\\.com/.*/_layouts/15/Doc\\.aspx", "\\bonenote\\b"],
+    "icon": "assets/onenote.png",
+    "desktop_names": ["OneNote"],
+    "window_titles": ["\\bOneNote\\b"]
   },
   {
     "sites": ["web\\.whatsapp\\.com"],
