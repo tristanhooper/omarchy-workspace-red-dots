@@ -7,6 +7,12 @@ Notifications on the workspace you are currently using do not add a dot.
 Dots follow the app's **current workspace** when a new notification arrives.
 No workspace numbers, usernames, or installed PWA IDs need to be configured.
 
+## Preview
+
+This screenshot shows the workspace indicators with a test notification dot on workspace 3.
+
+![Workspace indicators with a notification dot on workspace 3](assets/workspace-red-dots.png)
+
 ## Requirements
 
 - Omarchy 4 with its Quickshell plugin system
