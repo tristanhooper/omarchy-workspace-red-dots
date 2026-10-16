@@ -35,16 +35,14 @@ The plugin manager installs and enables the widget. It runs as your user inside
 the Omarchy shell and does not need root privileges. It does not change monitor
 or workspace configuration.
 
-For a local checkout, `python3 install.py` is also available. It validates the
-plugin, backs up the existing plugin and shell configuration under
-`~/.local/state/omarchy/plugin-backups/`, then enables it and restarts the shell.
-If another workspace widget cloned from `omarchy.workspaces` is active, the
-script disables that widget while preserving its files and replaces it in the
-same slot. Application windows stay open.
+Update a Git-managed installation with Omarchy's plugin manager:
 
-For updates installed with `install.py`, rerun it. Existing local notification
-routes are preserved. For Git-managed installations, use Omarchy's plugin update
-command; save custom route changes separately before accepting a Git update.
+```sh
+omarchy plugin update thooper.workspace-red-dots
+```
+
+The update replaces plugin files, including `notification-routes.json`. Save
+your custom route changes before updating if you edited that file.
 
 ## Files
 
@@ -54,13 +52,11 @@ command; save custom route changes separately before accepting a Git update.
 | `Workspaces.qml` | Workspace buttons, dot appearance, watcher lifecycle |
 | `workspace-notifications.py` | Notification tracking, app detection, workspace lookup |
 | `notification-routes.json` | Site patterns and app names for browser/PWA routing |
-| `install.py` | Local installation with configuration backups |
 | `tests/` | Synthetic routing tests without personal browser data |
 
 Installed files: `~/.config/omarchy/plugins/thooper.workspace-red-dots/`.
 Active widget selection: `~/.config/omarchy/shell.json`.
 Dot state: `~/.local/state/omarchy/workspace-notification-dots.json`.
-Backups: `~/.local/state/omarchy/plugin-backups/`.
 
 To inspect pending workspace numbers:
 
@@ -136,10 +132,7 @@ omarchy plugin enable omarchy.workspaces
 ```
 
 Removing the plugin deletes its installed plugin files through Omarchy. The
-second command restores the built-in workspace widget. If you used `install.py`,
-its backup of the prior shell configuration and plugin files remains under
-`~/.local/state/omarchy/plugin-backups/` if you want to restore a different
-workspace widget.
+second command restores the built-in workspace widget.
 
 ## Validate
 
