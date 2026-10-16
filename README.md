@@ -36,7 +36,7 @@ configuration, enables the widget, and restarts the shell. Application windows
 stay open. If another custom workspace widget is active, it is disabled and this
 plugin replaces it in the same slot. Its files are preserved.
 
-The plugin ID is `community.workspace-red-dots`. Omarchy can also install this
+The plugin ID is `thooper.workspace-red-dots`. Omarchy can also install this
 repository through `omarchy plugin add <repository-git-url> --enable` once hosted.
 
 For updates installed with `install.py`, rerun it. Existing local notification
@@ -54,7 +54,7 @@ command; save custom route changes separately before accepting a Git update.
 | `install.py` | Local installation with configuration backups |
 | `tests/` | Synthetic routing tests without personal browser data |
 
-Installed files: `~/.config/omarchy/plugins/community.workspace-red-dots/`.
+Installed files: `~/.config/omarchy/plugins/thooper.workspace-red-dots/`.
 Active widget selection: `~/.config/omarchy/shell.json`.
 Dot state: `~/.local/state/omarchy/workspace-notification-dots.json`.
 Backups: `~/.local/state/omarchy/plugin-backups/`.
@@ -128,7 +128,7 @@ describe the plugin; Omarchy and the apps retain their own data independently.
 ## Disable / restore stock workspaces
 
 ```sh
-omarchy plugin disable community.workspace-red-dots
+omarchy plugin disable thooper.workspace-red-dots
 omarchy plugin enable omarchy.workspaces
 ```
 

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "community.workspace-red-dots",
+  "id": "thooper.workspace-red-dots",
   "name": "Workspace Red Dots",
-  "version": "1.1.0",
-  "author": "Tristan Hooper",
+  "version": "0.0.1",
+  "author": "T Hooper",
   "description": "Workspace indicators with notification attention dots",
   "kinds": [
     "bar-widget"
