@@ -1,6 +1,7 @@
 [
   {
     "sites": ["outlook\\.(?:office(?:365)?\\.com|live\\.com|cloud\\.microsoft)"],
+    "icon": "assets/outlook.png",
     "desktop_names": ["Outlook", "Microsoft Outlook"],
     "window_titles": ["\\boutlook\\b"]
   },
