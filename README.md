@@ -70,11 +70,34 @@ python3 workspace-notifications.py --status
 
 ## App routing
 
-Outlook, Teams, and WhatsApp routes are included. On each start, the watcher discovers PWA
-IDs from the current user's installed `.desktop` launchers, matching their display
-names. It uses the resulting ID to find the PWA's current Hyprland workspace.
-Window-title matching provides a fallback if a matching launcher cannot be found.
-Other apps are matched by their notification name and window class when unambiguous.
+The default web app routes are:
+
+| App | Site identity in notification |
+| --- | --- |
+| Outlook | `outlook.office.com`, `outlook.office365.com`, `outlook.live.com`, `outlook.cloud.microsoft` |
+| Microsoft Teams | `teams.microsoft.com`, `teams.cloud.microsoft` |
+| WhatsApp | `web.whatsapp.com` |
+| Discord | `discord.com` |
+| Basecamp | `launchpad.37signals.com`, `basecamp.com` |
+| Google Contacts | `contacts.google.com` |
+| Google Maps | `maps.google.com`, `google.com/maps` |
+| Google Messages | `messages.google.com` |
+| Google Photos | `photos.google.com` |
+| HEY | `app.hey.com` |
+| X | `x.com` |
+| YouTube | `youtube.com` |
+| Zoom | `app.zoom.us`, `zoom.us` |
+
+These include the web apps bundled with Omarchy. On each start, the watcher also
+discovers PWA IDs from the current user's installed `.desktop` launchers when
+available. It uses an app ID to find the PWA's current Hyprland workspace, with
+window-title matching as a fallback.
+
+Native apps such as Slack, Thunderbird, Signal, Element, Telegram Desktop,
+Spotify, and Dropbox use generic matching between the notification app name and
+window class; they do not need site routes when that match is unambiguous. The
+Omarchy Package and AUR installers can add other native apps, which use the same
+generic matching.
 
 To add another browser app, edit the **installed** `notification-routes.json`:
 

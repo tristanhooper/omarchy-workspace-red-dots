@@ -47,6 +47,46 @@ class RoutingTests(unittest.TestCase):
             {'app': 'Brave', 'body': 'New message from web.whatsapp.com'},
             windows, routes), 7)
 
+    def test_omarchy_bundled_webapps_route_by_site_and_title(self):
+        routes = dots.resolve_routes(
+            json.loads((ROOT / 'notification-routes.json').read_text()), [])
+        examples = [
+            ('discord.com', 'Discord', 2),
+            ('launchpad.37signals.com', 'Basecamp', 3),
+            ('contacts.google.com', 'Contacts', 4),
+            ('maps.google.com', 'Maps', 5),
+            ('messages.google.com', 'Messages', 6),
+            ('photos.google.com', 'Google Photos', 7),
+            ('app.hey.com', 'HEY', 8),
+            ('x.com', 'Home / X', 9),
+            ('youtube.com', 'YouTube', 10),
+            ('app.zoom.us', 'Zoom', 11),
+        ]
+        for site, title, workspace in examples:
+            with self.subTest(site=site):
+                windows = [{
+                    'class': 'brave-pwa', 'title': title,
+                    'workspace': {'id': workspace},
+                }]
+                self.assertEqual(dots.workspace_for(
+                    {'app': 'Brave', 'body': f'Notification from {site}'},
+                    windows, routes), workspace)
+
+    def test_native_chat_apps_match_notification_name_to_window_class(self):
+        names_and_classes = [
+            ('Slack', 'slack'),
+            ('Discord', 'discord'),
+            ('Thunderbird', 'thunderbird'),
+            ('Signal', 'signal'),
+            ('Element', 'element'),
+            ('Telegram Desktop', 'telegram-desktop'),
+        ]
+        for name, window_class in names_and_classes:
+            with self.subTest(app=name):
+                windows = [{'class': window_class, 'workspace': {'id': 7}}]
+                self.assertEqual(dots.workspace_for(
+                    {'app': name, 'body': 'New message'}, windows, self.routes), 7)
+
     def test_unknown_browser_site_is_not_guessed(self):
         self.assertIsNone(dots.workspace_for(
             {'app': 'Brave', 'body': 'Unknown site'}, self.windows, self.routes))

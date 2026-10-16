@@ -13,5 +13,55 @@
     "sites": ["web\\.whatsapp\\.com"],
     "desktop_names": ["WhatsApp"],
     "window_titles": ["\\bWhatsApp\\b"]
+  },
+  {
+    "sites": ["discord\\.com"],
+    "desktop_names": ["Discord"],
+    "window_titles": ["\\bDiscord\\b"]
+  },
+  {
+    "sites": ["launchpad\\.37signals\\.com|basecamp\\.com"],
+    "desktop_names": ["Basecamp"],
+    "window_titles": ["\\bBasecamp\\b"]
+  },
+  {
+    "sites": ["contacts\\.google\\.com"],
+    "desktop_names": ["Google Contacts"],
+    "window_titles": ["\\b(?:Google )?Contacts\\b"]
+  },
+  {
+    "sites": ["maps\\.google\\.com|google\\.com/maps"],
+    "desktop_names": ["Google Maps"],
+    "window_titles": ["\\b(?:Google )?Maps\\b"]
+  },
+  {
+    "sites": ["messages\\.google\\.com"],
+    "desktop_names": ["Google Messages"],
+    "window_titles": ["\\b(?:Google )?Messages\\b"]
+  },
+  {
+    "sites": ["photos\\.google\\.com"],
+    "desktop_names": ["Google Photos"],
+    "window_titles": ["\\b(?:Google )?Photos\\b"]
+  },
+  {
+    "sites": ["app\\.hey\\.com"],
+    "desktop_names": ["HEY"],
+    "window_titles": ["\\bHEY\\b"]
+  },
+  {
+    "sites": ["x\\.com"],
+    "desktop_names": ["X"],
+    "window_titles": ["(?:^|\\s[|/–—-]\\s)X(?:$|\\s[|/–—-]\\s)"]
+  },
+  {
+    "sites": ["youtube\\.com"],
+    "desktop_names": ["YouTube"],
+    "window_titles": ["\\bYouTube\\b"]
+  },
+  {
+    "sites": ["app\\.zoom\\.us|zoom\\.us"],
+    "desktop_names": ["Zoom"],
+    "window_titles": ["\\bZoom\\b"]
   }
 ]
