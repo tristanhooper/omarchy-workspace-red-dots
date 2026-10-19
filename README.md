@@ -128,7 +128,7 @@ workspaces up to 10. Restart the shell after editing code.
 
 ## Behavior and limits
 
-- Dots mean a notification arrived since your last visit, not an unread count.
+- Dots mean a notification arrived since your last visit during the current boot, not an unread count. Reboot clears earlier dots.
 - Moving an app changes routing of future notifications. An existing dot remains
   where the notification arrived until you visit that workspace.
 - Ambiguous notifications are skipped rather than assigned to an arbitrary workspace.

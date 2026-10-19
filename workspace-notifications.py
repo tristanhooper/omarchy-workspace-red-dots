@@ -106,6 +106,15 @@ def snapshots(directory):
             pass
 
 
+def boot_identity():
+    """Return this boot's ID and start time in milliseconds."""
+    boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    with Path('/proc/stat').open() as stat:
+        boot_seconds = next(
+            int(line.split()[1]) for line in stat if line.startswith('btime '))
+    return boot_id, boot_seconds * 1000
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--status', action='store_true', help='Show pending workspace numbers and exit')
@@ -123,6 +132,7 @@ def main():
     state_path.parent.mkdir(parents=True, exist_ok=True)
     route_path = args.routes or Path(__file__).with_name('notification-routes.json')
     routes = resolve_routes(json.loads(route_path.read_text()), desktop_entries())
+    current_boot, boot_started = boot_identity()
     previous = None
     with state_path.with_suffix('.lock').open('a') as lock:
         while True:
@@ -133,7 +143,13 @@ def main():
                     try:
                         state = json.loads(state_path.read_text())
                     except (OSError, ValueError):
-                        state = {'since': int(time.time() * 1000), 'seen': [], 'pending': []}
+                        state = {'since': boot_started, 'seen': [], 'pending': []}
+                    # Dots belong to the current session. Keep notifications
+                    # generated during this boot, but discard older pending dots.
+                    if state.get('boot_id') != current_boot:
+                        state['pending'] = []
+                        state['since'] = boot_started
+                        state['boot_id'] = current_boot
                     before = json.dumps(state, sort_keys=True)
                     pending = set(state['pending'])
                     seen = set(state['seen'])
