@@ -96,12 +96,30 @@ def workspace_for(notification, windows, routes):
     return next(iter(ids)) if len(ids) == 1 else None
 
 
+def snapshot_items(value):
+    """Yield notification snapshots from object or array-based persistence."""
+    if isinstance(value, list):
+        for item in value:
+            yield from snapshot_items(item)
+    elif isinstance(value, dict):
+        # Older Omarchy releases wrote one snapshot per JSON file. Newer
+        # layouts may store several snapshots together in an array, either as
+        # the file root or in one of the notification-history collections.
+        collections = ('notifications', 'entries', 'pending', 'past', 'history')
+        found_collection = False
+        for key in collections:
+            if isinstance(value.get(key), list):
+                found_collection = True
+                yield from snapshot_items(value[key])
+        if not found_collection:
+            yield value
+
+
 def snapshots(directory):
     for p in list(directory.glob('*.json')) + list((directory / 'history').glob('*.json')):
         try:
             d = json.loads(p.read_text())
-            if isinstance(d, dict):
-                yield d
+            yield from snapshot_items(d)
         except (OSError, ValueError):
             pass
 

@@ -23,6 +23,40 @@ class RoutingTests(unittest.TestCase):
             {'class': 'brave-browser', 'workspace': {'id': 4}},
         ]
 
+    def test_snapshots_reads_legacy_objects_and_array_snapshots(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            history = root / 'history'
+            history.mkdir()
+            legacy = {'id': 1, 'timestamp': 100, 'app': 'Legacy'}
+            current = [
+                {'id': 2, 'timestamp': 200, 'app': 'Current A'},
+                {'id': 3, 'timestamp': 300, 'app': 'Current B'},
+            ]
+            (root / 'legacy.json').write_text(json.dumps(legacy))
+            (history / 'current.json').write_text(json.dumps(current))
+
+            found = list(dots.snapshots(root))
+
+        self.assertEqual(
+            {(item['id'], item['timestamp']) for item in found},
+            {(1, 100), (2, 200), (3, 300)},
+        )
+
+    def test_snapshots_reads_arrays_nested_in_notification_state(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'notifications.json').write_text(json.dumps({
+                'notifications': [
+                    {'id': 4, 'timestamp': 400, 'app': 'Current'},
+                ],
+                'dnd': False,
+            }))
+
+            found = list(dots.snapshots(root))
+
+        self.assertEqual([(item['id'], item['timestamp']) for item in found], [(4, 400)])
+
     def test_outlook_follows_window_when_moved(self):
         notification = {'app': 'Brave', 'body': 'https://outlook.office.com New mail'}
         self.assertEqual(dots.workspace_for(notification, self.windows, self.routes), 2)

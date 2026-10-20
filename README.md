@@ -19,9 +19,11 @@ This screenshot shows the workspace indicators with a test notification dot on w
 - Hyprland, Quickshell, and Python 3 (standard library only)
 - Working desktop notifications from the relevant apps
 
-Validated on Omarchy 4.0.4 / Hyprland 0.56.2. This plugin uses the Omarchy shell's
-existing QML components and notification history. It is not a Waybar module and
-does not support older Omarchy installations that use Waybar.
+Validated on Omarchy 4.0.4 / Hyprland 0.56.2. The notification reader accepts both
+individual object snapshots and array-based snapshots, preserving compatibility
+across Omarchy 4 releases. This plugin uses the Omarchy shell's existing QML
+components and notification history. It is not a Waybar module and does not support
+older Omarchy installations that use Waybar.
 
 ## Install
 
