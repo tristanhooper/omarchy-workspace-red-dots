@@ -47,8 +47,8 @@ Update a Git-managed installation with Omarchy's plugin manager:
 omarchy plugin update thooper.workspace-red-dots
 ```
 
-The update replaces plugin files, including `notification-routes.json`. Save
-your custom route changes before updating if you edited that file.
+The update replaces plugin files, including `notification-routes.json` and
+`config.json`. Save your custom route and appearance changes before updating.
 
 ## Files
 
@@ -56,6 +56,7 @@ your custom route changes before updating if you edited that file.
 | --- | --- |
 | `manifest.json` | Plugin registration and display name |
 | `Workspaces.qml` | Workspace buttons, dot appearance, watcher lifecycle |
+| `config.json` | Default notification dot position and color |
 | `workspace-notifications.py` | Notification tracking, app detection, workspace lookup |
 | `notification-routes.json` | Site patterns and app names for browser/PWA routing |
 | `tests/` | Synthetic routing tests without personal browser data |
@@ -124,10 +125,27 @@ Restart with `omarchy restart shell` after changing routes.
 
 ## Appearance
 
-Edit `notificationDot` in the installed `Workspaces.qml` to change its color,
-size, or margins. The workspace list initially displays 1–6 and includes occupied
-workspaces up to 10. Restart the shell after editing code.
+Edit `~/.config/omarchy/plugins/thooper.workspace-red-dots/config.json` to
+change the notification dot position or color:
 
+```sh
+nano ~/.config/omarchy/plugins/thooper.workspace-red-dots/config.json
+```
+
+Set `dotPosition` to `top-left`, `top-right`, `bottom-left`,
+`bottom-right`, or `center` (over the workspace number). Set `dotColor`
+to a `#RRGGBB` hex value.
+
+```json
+{
+  "dotPosition": "top-right",
+  "dotColor": "#ff4545"
+}
+```
+
+These are the defaults, preserving the original top-right red dot. The shell
+reloads the settings when the file is saved; no shell restart is needed. The
+workspace list initially displays 1–6 and includes occupied workspaces up to 10.
 ## Behavior and limits
 
 - Dots mean a notification arrived since your last visit during the current boot, not an unread count. Reboot clears earlier dots.

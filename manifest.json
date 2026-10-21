@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "thooper.workspace-red-dots",
   "name": "Workspace Red Dots",
-  "version": "0.7",
+  "version": "1.0",
   "author": "T Hooper",
   "description": "Adds red attention dots to workspace numbers when apps on those workspaces send notifications.",
   "kinds": [

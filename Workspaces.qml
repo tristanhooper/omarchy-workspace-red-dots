@@ -11,6 +11,41 @@ BarWidget {
   moduleName: "omarchy.workspaces"
 
   property var notificationWorkspaces: []
+  property string dotPosition: "top-right"
+  property string dotColor: "#ff4545"
+
+  function loadConfig(raw) {
+    root.dotPosition = "top-right"
+    root.dotColor = "#ff4545"
+
+    try {
+      var config = JSON.parse(raw)
+      var positions = ["top-left", "top-right", "bottom-left", "bottom-right", "center"]
+
+      if (positions.indexOf(config.dotPosition) !== -1) {
+        root.dotPosition = config.dotPosition
+      } else if (config.dotPosition !== undefined) {
+        console.warn("Workspace notification dots: invalid dotPosition; using top-right")
+      }
+
+      if (typeof config.dotColor === "string" && /^#[0-9a-fA-F]{6}$/.test(config.dotColor)) {
+        root.dotColor = config.dotColor
+      } else if (config.dotColor !== undefined) {
+        console.warn("Workspace notification dots: dotColor must be a #RRGGBB hex value; using #ff4545")
+      }
+    } catch (error) {
+      console.warn("Workspace notification dots: could not read config.json:", error)
+    }
+  }
+
+  FileView {
+    id: configFile
+    path: Quickshell.env("HOME") + "/.config/omarchy/plugins/thooper.workspace-red-dots/config.json"
+    watchChanges: true
+    printErrors: false
+    onLoaded: root.loadConfig(text())
+    onFileChanged: reload()
+  }
 
   Process {
     id: notificationWatcher
@@ -97,10 +132,15 @@ BarWidget {
           width: 6
           height: 6
           radius: 3
-          color: "#ff4545"
-          anchors.top: parent.top
-          anchors.right: parent.right
+          color: root.dotColor
+          anchors.top: root.dotPosition === "top-left" || root.dotPosition === "top-right" ? parent.top : undefined
+          anchors.bottom: root.dotPosition === "bottom-left" || root.dotPosition === "bottom-right" ? parent.bottom : undefined
+          anchors.left: root.dotPosition === "top-left" || root.dotPosition === "bottom-left" ? parent.left : undefined
+          anchors.right: root.dotPosition === "top-right" || root.dotPosition === "bottom-right" ? parent.right : undefined
+          anchors.centerIn: root.dotPosition === "center" ? parent : undefined
           anchors.topMargin: 3
+          anchors.bottomMargin: 3
+          anchors.leftMargin: 1
           anchors.rightMargin: 1
         }
       }
