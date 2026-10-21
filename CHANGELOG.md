@@ -2,9 +2,10 @@
 
 ## 1.0 — 2026-10-21
 
-- Configure notification dot position in any corner or centered over the workspace number.
-- Configure the dot color with a `#RRGGBB` value.
-- Reload appearance settings automatically when `config.json` changes.
+- Added appearance settings in `~/.config/omarchy/plugins/thooper.workspace-red-dots/config.json`.
+- Set `dotPosition` to `top-left`, `top-right`, `bottom-left`, `bottom-right`, or `center` (over the workspace number).
+- Set `dotColor` to any `#RRGGBB` color. Defaults preserve the existing top-right red dot (`#ff4545`).
+- Reload appearance settings automatically when `config.json` changes; no shell restart is needed.
 
 ## 0.6 — 2026-10-20
 
