@@ -7,6 +7,7 @@ import argparse
 import configparser
 import fcntl
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -54,17 +55,42 @@ def resolve_routes(routes, entries):
     return resolved
 
 
+def browser_family(value):
+    value = str(value).lower()
+    for family, names in (
+        ('brave', ('brave',)),
+        ('edge', ('msedge', 'microsoft edge', 'microsoft-edge')),
+        ('vivaldi', ('vivaldi',)),
+        ('firefox', ('firefox',)),
+        ('chromium', ('chromium', 'chrome')),
+    ):
+        if any(name in value for name in names):
+            return family
+    return 'edge' if value == 'edge' else None
+
+
 def workspace_for(notification, windows, routes):
     app = str(notification.get('app', '')).lower()
     if app in ('omarchy-action', 'notify-send', ''):
         return None
     # Prefer app name and body. Use the summary only when the body is empty:
     # message subjects can mention a site unrelated to the notifying PWA.
-    route_fields = ('app', 'body')
-    if not str(notification.get('body', '')).strip():
-        route_fields = ('app', 'summary')
+    # 4.5 lifts the browser origin out of body into source. Prefer that
+    # explicit origin over links quoted in a message.
+    source = str(notification.get('source', '')).strip()
+    if '.' in source:
+        route_fields = ('app', 'source')
+    elif str(notification.get('body', '')).strip():
+        route_fields = ('app', 'source', 'rawBody', 'body')
+    else:
+        route_fields = ('app', 'source', 'rawBody', 'summary')
     text = '\n'.join(str(notification.get(k, '')) for k in route_fields).lower()
-    browser = any(name in app for name in ('brave', 'chrom', 'edge', 'firefox', 'vivaldi'))
+    browser = browser_family(app)
+    if browser:
+        # Site URLs and installed app IDs can be shared across browsers.
+        # Exclude another browser before preferring a PWA ID or window title.
+        windows = [w for w in windows if browser_family(
+            w.get('class') or w.get('initialClass', '')) in (None, browser)]
     matches = []
     # Prefer a PWA's site identity over the shared browser application name.
     for route in routes:
@@ -124,6 +150,27 @@ def snapshots(directory):
             pass
 
 
+def notification_timestamp(notification):
+    """Return milliseconds for both legacy timestamp and 4.5 ts (seconds)."""
+    try:
+        value = notification.get('timestamp')
+        if value is None:
+            value = float(notification.get('ts', 0)) * 1000
+        timestamp = float(value)
+        return int(timestamp) if math.isfinite(timestamp) and timestamp > 0 else 0
+    except (TypeError, ValueError, OverflowError):
+        return 0
+
+
+def notification_identity(notification):
+    timestamp = notification_timestamp(notification)
+    if notification.get('key'):
+        # 4.5's key survives live -> history and sender replacement; the
+        # original DBus id alone can be reused within a boot.
+        return str(timestamp) + ':key:' + str(notification['key'])
+    return str(timestamp) + ':' + str(notification.get('originalId', notification.get('id', '')))
+
+
 def boot_identity():
     """Return this boot's ID and start time in milliseconds."""
     boot_id = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
@@ -139,8 +186,9 @@ def main():
     parser.add_argument('--routes', type=Path, help='Use a different routing configuration')
     args = parser.parse_args()
     home = Path.home()
-    directory = home / '.local/state/omarchy/notifications'
-    state_path = home / '.local/state/omarchy/workspace-notification-dots.json'
+    state_home = Path(os.environ.get('XDG_STATE_HOME') or home / '.local/state')
+    directory = state_home / 'omarchy/notifications'
+    state_path = state_home / 'omarchy/workspace-notification-dots.json'
     if args.status:
         try:
             print(json.dumps(json.loads(state_path.read_text()).get('pending', [])))
@@ -173,8 +221,8 @@ def main():
                     seen = set(state['seen'])
                     windows = None
                     for n in snapshots(directory):
-                        timestamp = n.get('timestamp', 0)
-                        key = str(timestamp) + ':' + str(n.get('originalId', n.get('id', '')))
+                        timestamp = notification_timestamp(n)
+                        key = notification_identity(n)
                         if timestamp < state['since'] or key in seen:
                             continue
                         if windows is None:

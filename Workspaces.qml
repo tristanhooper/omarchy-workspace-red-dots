@@ -5,6 +5,7 @@ import Quickshell.Io
 import Quickshell.Hyprland
 import qs.Commons
 import qs.Ui
+import "WorkspaceLogic.js" as WorkspaceLogic
 
 BarWidget {
   id: root
@@ -75,22 +76,38 @@ BarWidget {
     return null
   }
 
+  // 4.5 writes monitor -> workspace-block assignments. An absent file
+  // deliberately keeps the legacy 1-10 behavior on Omarchy 4.0.x.
+  property var monitorBlocks: ({})
+  readonly property bool perMonitor: Object.keys(root.monitorBlocks).length > 0
+  readonly property var monitor: {
+    var window = root.QsWindow.window
+    var screen = window ? window.screen : null
+    return screen ? Hyprland.monitorFor(screen) : Hyprland.focusedMonitor
+  }
+  readonly property string monitorName: root.monitor ? root.monitor.name : ""
+  readonly property int shownWorkspace: root.perMonitor
+    ? (root.monitor && root.monitor.activeWorkspace ? root.monitor.activeWorkspace.id : -1)
+    : (Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : -1)
+  readonly property int monitorBlock: WorkspaceLogic.blockFor(root.monitorBlocks, root.monitorName, root.shownWorkspace)
+
+  FileView {
+    path: (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/omarchy/monitor-workspaces"
+    watchChanges: true
+    printErrors: false
+    onLoaded: root.monitorBlocks = WorkspaceLogic.readBlocks(text())
+    onFileChanged: reload()
+    onLoadFailed: root.monitorBlocks = ({})
+  }
+
   function workspaceIds() {
-    var ids = [1, 2, 3, 4, 5, 6]
-    var values = Hyprland.workspaces.values
-
-    for (var i = 0; i < values.length; i++) {
-      var id = values[i].id
-      if (id > 0 && id <= 10 && ids.indexOf(id) === -1) ids.push(id)
-    }
-
-    ids.sort(function(left, right) { return left - right })
-    return ids
+    return WorkspaceLogic.workspaceIds(Hyprland.workspaces.values, root.perMonitor, root.monitorBlock, root.monitorName)
   }
 
   function focusWorkspace(id) {
     if (!root.bar) return
-    root.bar.run("hyprctl dispatch " + Util.shellQuote("hl.dsp.focus({ workspace = \"" + id + "\" })"))
+    var command = WorkspaceLogic.focusCommand(id, root.perMonitor, root.monitorBlock, root.monitorName)
+    root.bar.run("hyprctl dispatch " + Util.shellQuote(command))
   }
 
   readonly property real trailingGap: root.vertical ? 0 : Style.spaceReal(1.5)
@@ -115,10 +132,11 @@ BarWidget {
 
         readonly property var workspace: root.workspaceById(modelData)
         readonly property bool occupied: workspace !== null && workspace.toplevels.values.length > 0
-        readonly property bool focused: Hyprland.focusedWorkspace !== null && Hyprland.focusedWorkspace.id === modelData
+        readonly property bool focused: root.shownWorkspace === modelData
+        readonly property int slot: WorkspaceLogic.slotOf(modelData)
 
         bar: root.bar
-        text: focused ? "\uDB85\uDCFB" : (modelData === 10 ? "0" : String(modelData))
+        text: focused ? "\uDB85\uDCFB" : (slot === 10 ? "0" : String(slot))
         opacity: occupied || focused || notificationDot.visible ? 1 : 0.5
         horizontalMargin: 6
         verticalPadding: 6

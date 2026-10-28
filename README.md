@@ -19,11 +19,18 @@ This screenshot shows the workspace indicators with a test notification dot on w
 - Hyprland, Quickshell, and Python 3 (standard library only)
 - Working desktop notifications from the relevant apps
 
-Validated on Omarchy 4.0.4 / Hyprland 0.56.2. The notification reader accepts both
-individual object snapshots and array-based snapshots, preserving compatibility
-across Omarchy 4 releases. This plugin uses the Omarchy shell's existing QML
-components and notification history. It is not a Waybar module and does not support
-older Omarchy installations that use Waybar.
+Validated on the installed Omarchy 4.0.6 shell and against the 4.5.0-rc2
+shell modules using isolated runtime tests. The reader accepts legacy
+per-notification snapshots and 4.5's `live.json` / `history.json` arrays,
+normalizing legacy millisecond timestamps and 4.5 second timestamps. Browser
+origins in the new `source` field are used for PWA routing.
+
+On Omarchy 4.5 the widget follows each monitor's assigned workspace block,
+including unplugged-monitor workspaces temporarily shown on another monitor.
+Labels stay 1–9 and 0; notification state uses the actual Hyprland workspace ID.
+On 4.0.x the existing 1–10 behavior is retained. No monitor assignments or
+Hyprland settings are modified. This is an Omarchy shell plugin, not a Waybar
+module.
 
 ## Install
 
@@ -56,6 +63,7 @@ The update replaces plugin files, including `notification-routes.json` and
 | --- | --- |
 | `manifest.json` | Plugin registration and display name |
 | `Workspaces.qml` | Workspace buttons, dot appearance, watcher lifecycle |
+| `WorkspaceLogic.js` | Version-compatible monitor blocks, labels and focus commands |
 | `config.json` | Default notification dot position and color |
 | `workspace-notifications.py` | Notification tracking, app detection, workspace lookup |
 | `notification-routes.json` | Site patterns and app names for browser/PWA routing |
@@ -114,7 +122,8 @@ To add another browser app, edit the **installed** `notification-routes.json`:
 ```
 
 `sites` contains regular expressions matched against the notification's app name
-and body; when the body is empty, the summary can identify the site. This avoids
+and body (or the explicit browser origin in 4.5's `source` field); when the body
+is empty, the summary can identify the site. This avoids
 routing a message to a PWA just because its subject mentions a site.
 `desktop_names` matches the app launcher's display name, ignoring a
 trailing ` (PWA)`. `window_titles` contains fallback regular expressions. An
@@ -145,7 +154,9 @@ to a `#RRGGBB` hex value.
 
 These are the defaults, preserving the original top-right red dot. The shell
 reloads the settings when the file is saved; no shell restart is needed. The
-workspace list initially displays 1–6 and includes occupied workspaces up to 10.
+workspace list initially displays slots 1–6 and includes other existing slots up
+to 10. On 4.5 each monitor gets its own workspace block.
+
 ## Behavior and limits
 
 - Dots mean a notification arrived since your last visit during the current boot, not an unread count. Reboot clears earlier dots.
@@ -189,6 +200,7 @@ the built-in widget; the second command enables it again.
 ```sh
 omarchy plugin validate .
 python3 -m unittest discover -s tests -v
+node tests/compatibility.cjs
 ```
 
 The workspace button layout is adapted from Omarchy's MIT-licensed

@@ -69,6 +69,28 @@ class RoutingTests(unittest.TestCase):
             {'app': 'Brave', 'body': 'https://teams.cloud.microsoft New chat'},
             self.windows, self.routes), 3)
 
+    def test_outlook_notifications_stay_in_the_notifying_browser(self):
+        self.windows.append({
+            'class': 'chromium', 'title': 'Mail - Outlook - Chromium',
+            'workspace': {'id': 4},
+        })
+        for app, expected in [('Brave', 2), ('Chromium', 4)]:
+            with self.subTest(app=app):
+                self.assertEqual(dots.workspace_for(
+                    {'app': app, 'body': 'outlook.office.com'},
+                    self.windows, self.routes), expected)
+
+    def test_shared_pwa_ids_do_not_cross_browser_families(self):
+        self.windows.append({
+            'class': 'chrome-test-outlook-app-Default',
+            'workspace': {'id': 4},
+        })
+        for app, expected in [('Brave', 2), ('Chromium', 4)]:
+            with self.subTest(app=app):
+                self.assertEqual(dots.workspace_for(
+                    {'app': app, 'body': 'outlook.office.com'},
+                    self.windows, self.routes), expected)
+
     def test_whatsapp_pwa_notification_routes_by_site_and_window_title(self):
         routes = dots.resolve_routes(
             json.loads((ROOT / 'notification-routes.json').read_text()), [])
@@ -170,6 +192,48 @@ class RoutingTests(unittest.TestCase):
     def test_system_feedback_is_ignored(self):
         self.assertIsNone(dots.workspace_for(
             {'app': 'omarchy-action', 'body': 'outlook.office.com'}, self.windows, self.routes))
+
+
+class Omarchy45Tests(unittest.TestCase):
+    def test_timestamps_normalize_seconds_and_milliseconds(self):
+        expected = 1793191539125
+        self.assertEqual(dots.notification_timestamp({'timestamp': expected}), expected)
+        self.assertEqual(dots.notification_timestamp({'ts': expected / 1000}), expected)
+        for bad in [None, 'broken', float('nan'), float('inf'), -1, {}, []]:
+            with self.subTest(value=bad):
+                self.assertEqual(dots.notification_timestamp({'ts': bad}), 0)
+
+    def test_modern_live_and_history_share_identity(self):
+        row = {'key': 'boot-notification-42', 'originalId': 10, 'ts': 1793191539.125}
+        closed = dict(row, closed_ts=1793191542, reason='expired')
+        self.assertEqual(dots.notification_identity(row), dots.notification_identity(closed))
+        other = dict(row, key='boot-notification-43')
+        self.assertNotEqual(dots.notification_identity(row), dots.notification_identity(other))
+        self.assertEqual(dots.notification_identity({'timestamp': 100, 'originalId': 2}), '100:2')
+
+    def test_modern_source_survives_browser_origin_being_removed_from_body(self):
+        routes = dots.resolve_routes(json.loads((ROOT / 'notification-routes.json').read_text()), [])
+        windows = [
+            {'class': 'brave-outlook', 'title': 'Mail - Outlook', 'workspace': {'id': 12}},
+            {'class': 'chrome-teams', 'title': 'Microsoft Teams', 'workspace': {'id': 23}},
+            {'class': 'chromium', 'title': 'Mail - Outlook', 'workspace': {'id': 24}},
+        ]
+        row = {'app': 'Brave', 'source': 'outlook.office.com', 'body': 'Message about teams.microsoft.com'}
+        self.assertEqual(dots.workspace_for(row, windows, routes), 12)
+        row['app'] = 'Chromium'
+        self.assertEqual(dots.workspace_for(row, windows, routes), 24)
+
+    def test_reads_actual_modern_state_layout(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            row = {'key': 'test-42', 'app': 'Brave', 'source': 'outlook.office.com',
+                   'body': 'New message', 'originalId': 42, 'ts': 1793191539.125}
+            (root / 'live.json').write_text(json.dumps([row]))
+            (root / 'history.json').write_text(json.dumps([dict(row, closed_ts=1793191541)]))
+            (root / 'quiet.json').write_text(json.dumps({'dnd': False}))
+            found = [n for n in dots.snapshots(root) if dots.notification_timestamp(n)]
+            self.assertEqual(len(found), 2)
+            self.assertEqual({dots.notification_identity(n) for n in found}, {'1793191539125:key:test-42'})
 
 
 if __name__ == '__main__':
